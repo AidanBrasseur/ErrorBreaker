@@ -1,4 +1,5 @@
 "use strict";
+(function(global, document, $) { 
 const a = [
     [0, 1, 0],
     [1, 0, 1],
@@ -265,12 +266,53 @@ const levelMap = new Map([
 //     loading,
 //     progressColour,
 //     onClose,
+//     audio:{
+//        collision: ,
+// secondaryCollision: ,
+// gameOver:,
+// win:,
+//},
+//slam:, 
 //
 // }
 class ErrorBreaker {
     constructor(obj) {
         this.levelText = obj.levelText.toString().toLowerCase();
         this.message = obj.message;
+        if(obj.audio?.collision){
+            this.collisionSound =  new Audio(this.obj.audio?.collision)
+        }
+        else{
+            this.collisionSound =  new Audio( '../assets/audio/collision.mp3')
+        }
+        this.playCollision1 = true
+        if(obj.audio?.secondaryCollision){
+            this.secondaryCollisionSound =  new Audio(this.obj.audio?.secondaryCollision)
+        }
+        else{
+            this.secondaryCollisionSound = new Audio('../assets/audio/secondaryCollision.mp3')
+        }
+
+        if(obj.audio?.gameOver){
+            this.gameOverSound =  new Audio(this.obj.audio?.gameOver)
+        }
+        else{
+            this.gameOverSound = new Audio("../assets/audio/gameOver.mp3")
+        }
+
+        if(obj.audio?.gameOver){
+            this.winSound =  new Audio(this.obj.audio?.win)
+        }
+        else{
+            this.winSound = new Audio("../assets/audio/win.mp3")
+        }
+        if(obj.audio?.powerup){
+            this.powerupSound =  new Audio(this.obj.audio?.powerup)
+        }
+        else{
+            this.powerupSound = new Audio("../assets/audio/powerup.mp3")
+        }
+        this.slam = obj.slam
         this.onClose = obj.onClose
         this.messageColour = obj.messageColour
         this.primaryColour = obj.primaryColour
@@ -303,29 +345,29 @@ class ErrorBreaker {
         }
         this.initialClick = true;
         this.restarting = false;
-        this.ball = {
+        this.speedFactor = 1 / 2
+        this.balls = [{
             x: 0,
             y: 0,
             height: 0,
             width: 0,
-            factor: 1 / 2,
             timeOld: null,
             timeElapsed: null,
             step: 1,
             dx: 1,
             dy: 1,
-
-        }
+            ballElement: null,
+        }]
         this.paddleElement = null;
-
-        this.ballElement = null;
+        this.currPowerups = [];
         this.drawInitialLevel()
+        this.drawStartButton()
         this.drawInitialPaddle()
         this.drawInitialBall()
     }
     setProgress(number) {
-        if( $('#progress')[0] === undefined) return
-    
+        if ($('#progress')[0] === undefined) return
+
 
         if (number >= 100 && !this.pulse) {
             this.pulse = true;
@@ -372,9 +414,9 @@ class ErrorBreaker {
             $('#messageContainer')[0].style.opacity = 0;
         }
         this.div.style.opacity = 0;
-        
+
         this.stopGame()
-    
+
         setTimeout(() => {
             this.parentDiv.remove()
             this.onClose();
@@ -449,7 +491,7 @@ class ErrorBreaker {
         let gameSpace = document.createElement('div')
         gameSpace.id = 'gameSpace'
         gameSpace.style.transition = "opacity 1s"
-        gameSpace.style.transition = "background-color 1000ms linear outline 3s linear;"
+        gameSpace.style.transition = "background 1s ease-out"
         gameSpace.style.width = '80%'
         gameSpace.style.borderRadius = '5px'
         gameSpace.style.minWidth = '550px'
@@ -459,17 +501,28 @@ class ErrorBreaker {
     }
     stopGame() {
         if (this.restarting) return;
-        if(this.ballElement)  this.ballElement[0].remove();
-       
-        this.ball.x = 0
-        this.ball.y = 0
-        this.ball.dx = 1
-        this.ball.dy = 1
-        this.ball.timeOld = null
-        this.ball.timeElapsed = null
-        this.bricks = []
-        this.ballElement = null;
+        this.balls.forEach(ball => {
+            if (ball.ballElement) ball.ballElement[0].remove();
+
+        });
+        this.currPowerups.forEach(powerup => {
+            powerup.element[0].remove();
+        })
+        this.currPowerups = []
         this.restarting = true;
+        this.speedFactor = 1 / 2
+        this.balls = [{
+            x: 0,
+            y: 0,
+            height: 0,
+            width: 0,
+            timeOld: null,
+            timeElapsed: null,
+            step: 1,
+            dx: 1,
+            dy: 1,
+            ballElement: null,
+        }]
         cancelAnimationFrame(this.animationId)
         this.animationId = undefined
         this.restarting = false;
@@ -489,6 +542,7 @@ class ErrorBreaker {
     }
     animateDeath() {
         this.score = 0;
+        this.gameOverSound.play()
         let gameOverElement = document.createElement('div')
         gameOverElement.style.position = 'absolute'
         gameOverElement.id = 'gameOver'
@@ -519,12 +573,13 @@ class ErrorBreaker {
 
             $('#gameOver')[0].remove()
             this.resetGame();
-            this.ballElement[0].style.opacity = 1
+            this.balls[0].ballElement[0].style.opacity = 1
             this.startDrawing()
         });
     }
     animateWin() {
         this.score = 0;
+        this.winSound.play()
         let winElement = document.createElement('div')
         winElement.style.position = 'absolute'
         winElement.id = 'win'
@@ -554,15 +609,18 @@ class ErrorBreaker {
         $('#playAgainWin').click(() => {
             $('#win')[0].remove()
             this.resetGame();
-            this.ballElement[0].style.opacity = 1
+            this.balls[0].ballElement[0].style.opacity = 1
             this.startDrawing()
         });
     }
     animateOpening() {
+
+        this.div.style.border = `5px solid ${this.ballColour}`;
+    
         this.div.style.backgroundColor = this.backgroundColour
-        gameSpace.style.border = `5px solid ${this.ballColour}`;
+      
         this.paddleElement[0].style.opacity = 1
-        this.ballElement[0].style.opacity = 1
+        this.balls[0].ballElement[0].style.opacity = 1
         setTimeout(() => { this.startDrawing() }, 1000);
     }
 
@@ -570,119 +628,365 @@ class ErrorBreaker {
     draw(timestamp) {
 
         this.drawBall(timestamp)
+        this.drawPowerups(timestamp)
         if (this.animationId) {
             this.animationId = requestAnimationFrame((timestamp) => this.draw(timestamp))
         }
 
     }
+    drawPowerups(timestamp) {
+        let clientHeight = this.div.clientHeight - $('#levelTable')[0].clientHeight
+        this.currPowerups.forEach(powerup => {
+            if (!powerup.timeOld) powerup.timeOld = timestamp;
+            powerup.timeElapsed = timestamp - powerup.timeOld;
+            powerup.timeOld = timestamp;
 
-    checkCollisions() {
+            powerup.y += (1 * powerup.timeElapsed * 1 / 3 * (clientHeight / (clientHeight + 400)))//an attempt to scale speed to different screen sizes
+            powerup.element[0].style.transform = `translate(${0}px, ${powerup.y}px)`;
+        });
+        this.checkPowerUps();
+    }
+    checkPowerUps() {
 
-        let ballRect = this.ballElement[0].getBoundingClientRect();
-        for (let i = 0; i < this.bricks.length; i++) {
-            for (let j = 0; j < this.bricks[i].length; j++) {
-                for (let k = 0; k < this.bricks[i][j].length; k++) {
-                    let brick = this.bricks[i][j][k].element
+        this.currPowerups.forEach(powerup => {
+            let powerupRect = powerup.element[0].getBoundingClientRect();
+            let paddleRect = this.paddleElement[0].getBoundingClientRect()
+            if ((powerupRect.right > paddleRect.left && powerupRect.left < paddleRect.right && powerupRect.bottom > paddleRect.top && powerupRect.top < paddleRect.bottom)) {
+                this.powerupSound.play()
+                if (powerup.effect === 'multi') {
+                    let ball = document.createElement('div')
 
-                    let rect = brick.getBoundingClientRect();
+                    ball.style.position = 'absolute'
+                    ball.style.borderRadius = '50%'
+                    ball.style.width = '5%'
+                    ball.style.height = 0
+                    ball.style.paddingBottom = '5%'
+                    ball.style.backgroundColor = this.ballColour
+                    ball.style.opacity = 0;
+                    ball.style.transform = `translate(${this.balls[0].x}px, ${this.balls[0].y}px)`;
+                    let ball2 = document.createElement('div')
 
-                    if (this.bricks[i][j][k].avail === 1 && (ballRect.right > rect.left && ballRect.left < rect.right && ballRect.bottom > rect.top && ballRect.top < rect.bottom)
-                    ) {
-                        this.bricks[i][j][k].avail = 0;
-                        this.score += 1;
+                    ball2.style.position = 'absolute'
+                    ball2.style.borderRadius = '50%'
+                    ball2.style.width = '5%'
+                    ball2.style.height = 0
+                    ball2.style.paddingBottom = '5%'
+                    ball2.style.backgroundColor = this.ballColour
+                    ball2.style.opacity = 0;
+                    ball2.style.transform = `translate(${this.balls[0].x}px, ${this.balls[0].y}px)`;
 
-                        let leftDiff = ballRect.right - rect.left
-                        let rightDiff = rect.right - ballRect.left
-                        let topDiff = ballRect.bottom - rect.top
-                        let bottomDiff = rect.bottom - ballRect.top
-                        let minDiff = Math.min(leftDiff, rightDiff, topDiff, bottomDiff)
-                        if (minDiff === leftDiff) {
-                            this.ball.dx = -this.ball.step;
+                    this.div.appendChild(ball)
+                    this.div.appendChild(ball2)
+                    let ballElement1 = $(ball)
+                    let ballElement2 = $(ball2)
+
+                    let activeBall1 = {
+                        x: this.balls[0].x,
+                        y: this.balls[0].y,
+                        height: this.balls[0].height,
+                        width: this.balls[0].width,
+
+                        timeOld: null,
+                        timeElapsed: null,
+                        step: 1,
+                        dx: -this.balls[0].dx,
+                        dy: this.balls[0].dy,
+                        ballElement: ballElement1
+                    }
+                    let activeBall2 = {
+                        x: this.balls[0].x,
+                        y: this.balls[0].y,
+                        height: this.balls[0].height,
+                        width: this.balls[0].width,
+
+                        timeOld: null,
+                        timeElapsed: null,
+                        step: 1,
+                        dx: this.balls[0].dx,
+                        dy: -this.balls[0].dy,
+                        ballElement: ballElement2
+                    }
+                    activeBall1.ballElement[0].style.opacity = 1
+                    activeBall2.ballElement[0].style.opacity = 1
+                    this.balls.push(activeBall1)
+                    this.balls.push(activeBall2)
+
+                    const index = this.currPowerups.indexOf(powerup);
+                    if (index > -1) {
+                        this.currPowerups.splice(index, 1);
+                    }
+                    powerup.element[0].remove()
+                    this.currPowerups.filter(powerup => powerup != powerup)
+                }
+                else if (powerup.effect == 'increase') {
+                    this.paddleElement[0].style.width = '25%'
+                    setTimeout(() => this.paddleElement[0].style.width = '15%', 7000);
+                    const index = this.currPowerups.indexOf(powerup);
+                    if (index > -1) {
+                        this.currPowerups.splice(index, 1);
+                    }
+                    powerup.element[0].remove()
+                    this.currPowerups.filter(powerup => powerup != powerup)
+
+                }
+                else if (powerup.effect == 'speed') {
+                    this.speedFactor = 1 / 1.5
+                    setTimeout(() => this.speedFactor = 1 / 2, 7000);
+                    const index = this.currPowerups.indexOf(powerup);
+                    if (index > -1) {
+                        this.currPowerups.splice(index, 1);
+                    }
+                    powerup.element[0].remove()
+                    this.currPowerups.filter(powerup => powerup != powerup)
+                }
+            }
+
+            if (powerupRect.top >= paddleRect.top + 50 && !this.restarting) {
+                const index = this.currPowerups.indexOf(powerup);
+                if (index > -1) {
+                    this.currPowerups.splice(index, 1);
+                }
+                powerup.element[0].remove()
+            }
+        });
+    }
+
+    checkBallCollisions() {
+        this.balls.forEach(ball => {
+            let ballRect = ball.ballElement[0].getBoundingClientRect();
+            for (let i = 0; i < this.bricks.length; i++) {
+                for (let j = 0; j < this.bricks[i].length; j++) {
+                    for (let k = 0; k < this.bricks[i][j].length; k++) {
+                        let brick = this.bricks[i][j][k].element
+
+                        let rect = brick.getBoundingClientRect();
+
+
+                        if (this.bricks[i][j][k].avail === 1 && (ballRect.right > rect.left && ballRect.left < rect.right && ballRect.bottom > rect.top && ballRect.top < rect.bottom)
+                        ) {
+                            if (this.playCollision1) {
+                                this.collisionSound.play()
+                                this.playCollision1 = false
+                            }
+                            else {
+                                this.secondaryCollisionSound.play()
+                                this.playCollision1 = true
+                            }
+                            this.bricks[i][j][k].avail = 0;
+                            this.score += 1;
+
+                            let leftDiff = ballRect.right - rect.left
+                            let rightDiff = rect.right - ballRect.left
+                            let topDiff = ballRect.bottom - rect.top
+                            let bottomDiff = rect.bottom - ballRect.top
+                            let minDiff = Math.min(leftDiff, rightDiff, topDiff, bottomDiff)
+                            if (minDiff === leftDiff) {
+                                ball.dx = -ball.step;
+                            }
+                            if (minDiff === rightDiff) {
+                                ball.dx = ball.step;
+                            }
+                            if (minDiff === topDiff) {
+                                ball.dy = -ball.step;
+                            }
+                            if (minDiff === bottomDiff) {
+                                ball.dy = ball.step;
+                            }
+
+                            brick.style.backgroundColor = 'transparent';
+
+
+                            let randomNum = Math.floor(Math.random() * 100);
+                            let icon = ""
+                            let effect = ""
+                            if (randomNum <= 5) {
+                                icon = "⚇"
+                                effect = "multi"
+                            }
+                            if (randomNum <= 10 && randomNum > 5) {
+                                icon = "⚎"
+                                effect = "increase"
+                            }
+                            if (randomNum <= 15 && randomNum > 10) {
+                                icon = "↯"
+                                effect = 'speed'
+
+                            }
+                            if (randomNum <= 15) {
+                                let powerupElement = document.createElement('div')
+                                powerupElement.style.borderRadius = '50%'
+                                powerupElement.style.width = '5%'
+                                powerupElement.style.height = 0
+                                powerupElement.style.paddingBottom = '5%'
+                                // powerupElement.style.backgroundColor = 'black'
+                                powerupElement.style.display = 'flex'
+                                powerupElement.style.justifyContent = 'center'
+
+                                powerupElement.style.alignContent = 'center'
+                                powerupElement.style.alignItems = 'center'
+
+                                powerupElement.style.position = 'absolute'
+                                powerupElement.style.transform = `translate(${0}px, ${ball.y}px)`;
+                                // powerupElement.style.top = `${ball.y + $('#levelTable')[0].clientHeight}px`;
+                                powerupElement.style.left = `${ball.x}px`;
+                                this.div.appendChild(powerupElement)
+                                let innerText = document.createElement('div');
+                                innerText.width = '100%'
+                                innerText.display = 'inline-block'
+                                innerText.height = '100%'
+                                innerText.style.position = 'absolute'
+                                // innerText.style.padding = '0 0 0 0'
+                                // innerText.style.top = '50%'
+                                // innerText.style.left = '50%'
+                                // innerText.style.transform = 'translate(-50%, -50%)'
+                                innerText.innerText = icon
+                                innerText.style.textAlign = "center"
+                                innerText.style.color = 'red'
+                                innerText.style.fontSize = '4vw'
+                                powerupElement.appendChild(innerText)
+
+                                let keyframeRotate = [
+                                    {
+                                        transform: "rotate(0deg)",
+                                        offset: 0
+                                    },
+                                    {
+                                        transform: "rotate(359deg)",
+                                        offset: 1
+
+                                    },
+                                ]
+                                $(innerText)[0].animate(keyframeRotate, {
+                                    // timing options
+                                    duration: 2000,
+                                    iterations: Infinity
+                                })
+                                let powerup = {
+                                    element: $(powerupElement),
+                                    y: ball.y,
+                                    timeOld: null,
+                                    timeElapsed: null,
+                                    effect: effect
+                                }
+                                this.currPowerups.push(powerup)
+                            }
+                            if (this.score == this.levelText.length * 5 * 3) {
+                                this.stopGame()
+                                this.animateWin();
+                            }
+
                         }
-                        if (minDiff === rightDiff) {
-                            this.ball.dx = this.ball.step;
-                        }
-                        if (minDiff === topDiff) {
-                            this.ball.dy = -this.ball.step;
-                        }
-                        if (minDiff === bottomDiff) {
-                            this.ball.dy = this.ball.step;
-                        }
-
-                        brick.style.backgroundColor = 'transparent';
-                        if (this.score == this.levelText.length * 5 * 3) {
-                            this.stopGame()
-                            this.animateWin();
-                        }
-                        return;
                     }
                 }
             }
-        }
-        let paddleRect = this.paddleElement[0].getBoundingClientRect()
-        if ((ballRect.right > paddleRect.left && ballRect.left < paddleRect.right && ballRect.bottom > paddleRect.top && ballRect.top < paddleRect.bottom)) {
+            let paddleRect = this.paddleElement[0].getBoundingClientRect()
+            if ((ballRect.right > paddleRect.left && ballRect.left < paddleRect.right && ballRect.bottom > paddleRect.top && ballRect.top < paddleRect.bottom)) {
 
-            let leftDiff = ballRect.right - paddleRect.left
-            let rightDiff = paddleRect.right - ballRect.left
-            let topDiff = ballRect.bottom - paddleRect.top
-            let bottomDiff = paddleRect.bottom - ballRect.top
-            let minDiff = Math.min(leftDiff, rightDiff, topDiff, bottomDiff)
-            if (minDiff === leftDiff) {
-                this.ball.dx = -this.ball.step;
-            }
-            if (minDiff === rightDiff) {
-                this.ball.dx = this.ball.step;
-            }
-            if (minDiff === topDiff) {
-                this.ball.dy = -this.ball.step;
-            }
-            if (minDiff === bottomDiff) {
-                this.ball.dy = this.ball.step;
+                let leftDiff = ballRect.right - paddleRect.left
+                let rightDiff = paddleRect.right - ballRect.left
+                let topDiff = ballRect.bottom - paddleRect.top
+                let bottomDiff = paddleRect.bottom - ballRect.top
+                let minDiff = Math.min(leftDiff, rightDiff, topDiff, bottomDiff)
+                if (minDiff === leftDiff) {
+                    ball.dx = -ball.step;
+                }
+                if (minDiff === rightDiff) {
+                    ball.dx = ball.step;
+                }
+                if (minDiff === topDiff) {
+                    ball.dy = -ball.step;
+                }
+                if (minDiff === bottomDiff) {
+                    ball.dy = ball.step;
+                }
+                if (this.playCollision1) {
+                    this.collisionSound.play()
+                    this.playCollision1 = false
+                }
+                else {
+                    this.secondaryCollisionSound.play()
+                    this.playCollision1 = true
+                }
+
+
             }
 
-            return;
-        }
+            let clientWidth = this.div.clientWidth
+            let clientHeight = this.div.clientHeight - $('#levelTable')[0].clientHeight
+            let hitSide = false
+            if (ball.x + ball.width >= clientWidth) {
+                ball.dx = -ball.step;
+                hitSide = true
+            }
+            if (ball.x <= 0) {
+                ball.dx = ball.step;
+                hitSide = true
+            }
+            if (ball.y <= -$('#levelTable')[0].clientHeight) {
+                ball.dy = ball.step;
+                hitSide = true
+            }
+            if (hitSide) {
+                if (this.playCollision1) {
+                    this.collisionSound.play()
+                    this.playCollision1 = false
+                }
+                else {
+                    this.secondaryCollisionSound.play()
+                    this.playCollision1 = true
+                }
+            }
+            if (ball.y + ball.height >= clientHeight && !this.restarting) {
 
-        let clientWidth = this.div.clientWidth
-        let clientHeight = this.div.clientHeight - $('#levelTable')[0].clientHeight
-        if (this.ball.x + this.ball.width >= clientWidth) this.ball.dx = -this.ball.step;
-        if (this.ball.x <= 0) this.ball.dx = this.ball.step;
-        if (this.ball.y + this.ball.height >= clientHeight && !this.restarting) {
+
+                const index = this.balls.indexOf(ball);
+                if (index > -1) {
+                    this.balls.splice(index, 1);
+                }
+                ball.ballElement[0].remove();
+
+            }
+
+        });
+        if (this.balls.length == 0) {
             this.stopGame();
             this.animateDeath();
-            return;
         }
-        if (this.ball.y <= -$('#levelTable')[0].clientHeight) this.ball.dy = this.ball.step;
+
     }
 
 
     drawBall(timestamp) {
+
         let clientWidth = this.div.clientWidth
         let clientHeight = this.div.clientHeight - $('#levelTable')[0].clientHeight
-        if (!this.ball.timeOld) this.ball.timeOld = timestamp;
-        this.ball.timeElapsed = timestamp - this.ball.timeOld;
-        this.ball.timeOld = timestamp;
-        this.ball.x += (this.ball.dx * this.ball.timeElapsed * this.ball.factor * (clientWidth / (clientWidth + 400))) //an attempt to scale speed to different screen sizes
-        this.ball.y += (this.ball.dy * this.ball.timeElapsed * this.ball.factor * (clientHeight / (clientHeight + 400)))//an attempt to scale speed to different screen sizes
-        this.ballElement[0].style.transform = `translate(${this.ball.x}px, ${this.ball.y}px)`;
-        this.checkCollisions();
+        this.balls.forEach(ball => {
+            if (!ball.timeOld) ball.timeOld = timestamp;
+            ball.timeElapsed = timestamp - ball.timeOld;
+            ball.timeOld = timestamp;
+            ball.x += (ball.dx * ball.timeElapsed * this.speedFactor * (clientWidth / (clientWidth + 400))) //an attempt to scale speed to different screen sizes
+            ball.y += (ball.dy * ball.timeElapsed * this.speedFactor * (clientHeight / (clientHeight + 400)))//an attempt to scale speed to different screen sizes
+            ball.ballElement[0].style.transform = `translate(${ball.x}px, ${ball.y}px)`;
+        });
+        this.checkBallCollisions();
+
     }
 
     drawInitialBall() {
         let ball = document.createElement('div')
-        ball.id = 'ball'
+        ball.className = 'ball'
         ball.style.width = '5%'
         ball.style.height = 0
         ball.style.paddingBottom = '5%'
-        ball.style.position = 'relative'
+        ball.style.position = 'absolute'
         ball.style.borderRadius = '50%'
         ball.style.backgroundColor = this.ballColour
         ball.style.opacity = 0;
         ball.style.transition = "opacity 1s"
         this.div.appendChild(ball)
-        this.ballElement = $("#ball")
-        this.ball.width = this.ballElement[0].clientWidth
-        this.ball.height = this.ballElement[0].clientHeight
+        this.balls[0].ballElement = $(ball)
+        this.balls[0].width = this.balls[0].ballElement[0].clientWidth
+        this.balls[0].height = this.balls[0].ballElement[0].clientHeight
     }
 
 
@@ -733,6 +1037,70 @@ class ErrorBreaker {
 
 
     }
+    drawStartButton(){
+        let startButtonContainer = document.createElement("div")
+        startButtonContainer.style.flexDirection = 'row'
+        startButtonContainer.id = 'startButtonContainer'
+        startButtonContainer.style.display = 'flex'
+        startButtonContainer.style.position = 'relative'
+        startButtonContainer.style.justifyContent = 'center'
+        startButtonContainer.style.transition = "opacity 0.3s"
+        startButtonContainer.style.marginTop = '10px'
+        startButtonContainer.style.alignItems = 'center'
+        startButtonContainer.style.cursor = 'pointer'
+        let startButton = document.createElement("div")
+        startButton.style = `font-family: Helvetica ; margin-left: 5%; margin-right: 10px; position: relative; border-radius: 50%; width: 50px; height: 50px; background-color: black; display: 'flex'; float: left; z-index: 3; justify-content: center; align-items: center`
+        startButton.innerHTML = `<div id='startButtonText' style='color: white; margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);'>►</div>`
+        startButtonContainer.appendChild(startButton)
+        let startText = document.createElement("div")
+        startText.style.display = 'flex'
+        startText.style.alignItems = 'center'
+        startText.innerHTML = "Click Here to Start Game"
+        startButtonContainer.appendChild(startText)
+        this.div.appendChild(startButtonContainer)
+        let keyframePulse = [
+            {
+                transform: "scale(0.95)",
+                boxShadow: "0 0 0 0 rgba(0, 0, 0, 0.7)",
+                offset: 0
+            },
+            {
+                transform: "scale(1)",
+                boxShadow: "0 0 0 10px rgba(0, 0, 0, 0)",
+                offset: 0.7
+            },
+            {
+                transform: "scale(0.95)",
+                boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
+                offset: 1
+
+            },
+        ]
+       
+        $(startButton)[0].animate(keyframePulse, {
+            // timing options
+            duration: 2000,
+            iterations: Infinity
+        })
+        $(startButtonContainer).click(() => {
+            $('#levelTable')[0].style.transform = `scale(1)`
+            $('#levelTable')[0].style.cursor = 'default'
+            $('#levelTable').unbind('mouseenter mouseleave');
+            $('#levelTable').unbind('click');
+            startButtonContainer.style.opacity = 0;
+            setTimeout(() => {
+                startButtonContainer.remove();
+                this.animateOpening();
+            }, 400);
+            
+        });
+      
+    }
 
 
     drawInitialLevel() {
@@ -775,6 +1143,7 @@ class ErrorBreaker {
             let letterCell = levelDivRow.insertCell()
             letterCell.appendChild(letterTable)
         }
+       
 
         (this.div).appendChild(levelDiv)
         if (this.initialClick) {
@@ -791,8 +1160,104 @@ class ErrorBreaker {
                 $('#levelTable')[0].style.cursor = 'default'
                 $('#levelTable').unbind('mouseenter mouseleave');
                 $('#levelTable').unbind('click');
+                $('#startButtonContainer')[0].style.opacity = 0;
+            setTimeout(() => {
+                $('#startButtonContainer')[0].remove();
                 this.animateOpening();
+            }, 400);
             });
         }
+        if(this.slam){
+        let keyframeShake = [
+            {
+                marginTop: 0,
+                marginLeft: 0,
+                offset: 0
+            },
+            {
+                marginTop: '-5px',
+                marginLeft: 0,
+                offset: 0.1
+            },
+            {
+                marginTop: 0,
+                marginLeft: '-5px',
+                offset: 0.2
+            },
+            {
+                marginTop: '5px',
+                marginLeft: 0,
+                offset: 0.3
+            },
+            {
+                marginTop: 0,
+                marginLeft: '5px',
+                offset: 0.4
+            },
+            {
+                marginTop: '-2px',
+                marginLeft: 0,
+                offset: 0.5
+            },
+            {
+                marginTop: 0,
+                marginLeft: '-2px',
+                offset: 0.6
+            },
+            {
+                marginTop: '2px',
+                marginLeft: 0,
+                offset: 0.7
+            },
+            {
+                marginTop: 0,
+                marginLeft: '2px',
+                offset: 0.8
+            },
+            {
+                marginTop: '1px',
+                marginLeft: 0,
+                offset: 0.9
+            },
+            {
+                marginTop: 0,
+                marginLeft: 0,
+                offset: 1
+            },
+        ]
+        this.div.animate(keyframeShake, {
+            // timing options
+           
+            duration: 200,
+            iterations: 1,
+            delay: 500,
+        })
+
+        let keyframeSlam = [
+            {
+                transform: "scale(10, 10)",
+                offset: 0
+            },
+            {
+                opacity: 0,
+                offset: 0.4
+
+            },
+            {
+                transform: "scale(1,1)",
+                offset: 1
+            },
+        ]
+    
+        $('#levelTable')[0].animate(keyframeSlam, {
+            // timing options
+            easing: 'ease-in',
+            duration: 500,
+            iterations: 1
+        })
+        this.slam = false;
+    }
     }
 }
+global.ErrorBreaker = global.ErrorBreaker || ErrorBreaker
+})(window, window.document, $);
