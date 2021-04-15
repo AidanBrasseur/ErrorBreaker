@@ -1,23 +1,230 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-   <meta charset="utf-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link href='https://fonts.googleapis.com/css?family=Black+Ops+One' rel='stylesheet' type='text/css'>
-   <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-   <script defer type="text/javascript" src='/js/ErrorBreaker.js'></script>
-   <script defer type="text/javascript" src='/js/examples.js'></script>
-
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Black+Ops+One' rel='stylesheet' type='text/css'>
+    <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer type="text/javascript" src='js/ErrorBreaker.js'></script>
+    <script defer type="text/javascript" src='js/examples.js'></script>
 </head>
 
 <body>
-   <div id='documentContainer' style="width: 100vw; height: 100vh; justify-content: center; display: flex;">
-      <div style='justify-content: left; display: flex;'>
-         <button style='width: 100px; height: 50px' onclick="displayLoad()">See Loading Example</button>
-         <button style='width: 100px; height: 50px' onclick="displayError()">See Error Example</button>
-      </div>
-      </div>
-   </div>
+
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">ErrorBreaker</h1>
+            <ul class="nav">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="docs.html">Docs</a></li>
+                <li><a href="examples.html">Examples</a></li>
+            </ul>
+        </div>
+    </nav>
+    <section class="section-a">
+        <div class="container">
+            <div>
+                <h1>How to Play</h1>
+                <p>Break all of the bricks to win! </p>
+                <h2>Movement</h2>
+                <p>Move the paddle around using the mouse!</p>
+                <h2>Powerups</h2>
+                <div style="display: flex; flex-direction: column; ">
+                    <div style=" display: flex; flex-direction: row; align-items: center;">
+                        <div style="font-size: 3vw;">
+                            ⚇
+                        </div>
+                        <div style="margin-left: 25px; font-size: 1vw;">
+                            MultiBall: Spawns an additional 2 balls
+                        </div>
+                    </div>
+                    <div style=" display: flex; flex-direction: row; align-items: center;">
+                        <div style="font-size: 3vw;">
+                            ⚎
+                        </div>
+                        <div style="margin-left: 25px; font-size: 1vw;">
+                            Paddle Width: Increases Paddle Width by 10% for 7 seconds
+                        </div>
+                    </div>
+                    <div style=" display: flex; flex-direction: row; align-items: center;">
+                        <div style="font-size: 3vw; transform: rotate(180deg);">
+                            ↯
+                        </div>
+                        <div style="margin-left: 25px; font-size: 1vw;">
+                            Speed Boost: Increases game speed by 75% for 7 seconds
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div></div>
+            <div id='basicExample'>
+                <h1>Basic Error Example</h1>
+                <p>A basic example of using ErrorBreaker to display an error message and error code. The slam animation
+                    is also enabled</p>
+                <textarea style="width: 25vw;" readonly>
+parentDiv = $('#errorContainer');
+const obj = {
+            levelText: '404',
+            message: "We’re sorry, the page you are looking for has vanished",
+            div: parentDiv[0],
+            primaryColour: 'Coral',
+            secondaryColour: 'Gainsboro',
+            backgroundColour: 'LightSteelBlue',
+            ballColour: 'Navy',
+            messageColour: 'black',
+            slam: true
+        }
+const errorBreaker = new ErrorBreaker(obj)
+              </textarea>
+            </div>
+            <div className="errorContainer" id='errorContainer1' style="width: 100%; height: 55vh; position: relative;">
+                <btn id="btn1Basic" onClick="spawnBasic()" class="btn"
+                    style="position: absolute; left: 50%;  margin: 0; top: 50%; width: fit-content; transform: translate(-50%, -50%);">
+                    Click to create ErrorBreaker game</button>
+            </div>
+            <div id='loadingExample'>
+                <h1>Loading Example</h1>
+                <p>An example of using ErrorBreaker to display progress while waiting for something to load.
+                    onClose method being used to display a message once the user exits out of the game.</p>
+                <textarea style="width: 25vw;" readonly>
+const onCloseLoading = () => {
+    let errorContainer2 = $('#loadingGameWrapper');
+    let afterLoad = document.createElement('div')
+    afterLoad.innerHTML =  &lt;div id='afterLoad'>
+    Now the application can continue on with whatever it was waiting for
+    &lt;/div>`
+    errorContainer2[0].appendChild(afterLoad)
+}
+parentDiv = $('#errorContainer');
+const obj = {
+    levelText: 'loading',
+    div: parentDiv[0],
+    primaryColour: 'DeepSkyBlue',
+    secondaryColour: 'Aquamarine',
+    backgroundColour: 'AliceBlue',
+    ballColour: 'black',
+    messageColour: 'black',
+    loading: true,
+    progressColour: 'LightGreen',
+    onClose: onClose
+}
+const errorBreaker = new ErrorBreaker(obj)
+let step = 0.4;
+let progress = 0;
+//fake loading progress
+interval = setInterval(function () {
+    progress += step
+
+    if(progress >= 40){
+        step = 0.3
+    }
+    if(progress >= 50){
+        step = 0.25
+    }
+    if(progress >= 70){
+        step = 0.2
+    }
+    errorBreaker.setProgress(progress)
+}, 100);
+              </textarea>
+            </div>
+            <div id='loadingGameWrapper'>
+                <div className="errorContainer" id='errorContainer2'
+                    style="width: 100%; height: 55vh; position: relative;">
+
+                    <btn id="btn2Loading" onClick="spawnLoading()" class="btn"
+                        style="position: absolute; left: 50%;  margin: 0; top: 50%; width: fit-content; transform: translate(-50%, -50%);">
+                        Click to create ErrorBreaker game</button>
+                </div>
+            </div>
+            <div id='closeExample'>
+                <h1>Animate Close Example</h1>
+                <p>An example of using the animateClose method in order to exit out of the game</p>
+                <textarea style="width: 25vw;" readonly>
+let errorContainer1 = $('#errorContainer3');
+let closeButton = $('#btn4Close')[0]
+closeButton.style.opacity = 1
+const obj = {
+    levelText: '309',
+    message: "Thanks for playing",
+    div: errorContainer1[0],
+    primaryColour: 'Coral',
+    secondaryColour: 'Gainsboro',
+    backgroundColour: 'LightSteelBlue',
+    ballColour: 'Navy',
+    messageColour: 'black',
+    powerupColour: 'red',
+    slam: true
+}
+let errorBreaker = new ErrorBreaker(obj)
+closeButton.onclick = () => {
+    errorBreaker.animateClose()
+    closeButton.style.opacity = 0
+}
+              </textarea>
+            </div>
+            <div id='closeGameWrapper'>
+                <btn id="btn4Close" class="btn" style='opacity: 0; transition: opacity 1s'> ✖ Close Game</btn>
+                <div className="errorContainer" id='errorContainer3'
+                    style="width: 100%; height: 55vh; position: relative;">
+
+                    <btn id="btn3Close" onClick="spawnClose()" class="btn"
+                        style="position: absolute; left: 50%;  margin: 0; top: 50%; width: fit-content; transform: translate(-50%, -50%);">
+                        Click to create ErrorBreaker game</button>
+                </div>
+            </div>
+            <div id='audioExample'>
+                <h1>Alternate Audio Example</h1>
+                <p>An example of using custom audio effects rather than the defaults</p>
+                <textarea style="width: 25vw;" readonly>
+let errorContainer1 = $('#errorContainer4');
+const obj = {
+    levelText: '309',
+    message: "Enjoy the sounds",
+    div: errorContainer1[0],
+    primaryColour: 'Coral',
+    secondaryColour: 'Gainsboro',
+    backgroundColour: 'LightSteelBlue',
+    ballColour: 'Navy',
+    messageColour: 'black',
+    powerupColour: 'red',
+    slam: true,
+    winSound: './assets/audio/alt-win.mp3',
+    gameOverSound:  './assets/audio/alt-gameOver.mp3',
+    collisionSound:  './assets/audio/alt-col.mp3',
+    secondaryCollisionSound: './assets/audio/alt-sec-col.mp3',
+}
+let errorBreaker = new ErrorBreaker(obj)
+              </textarea>
+            </div>
+            <div className="errorContainer" id='errorContainer4' style="width: 100%; height: 55vh; position: relative;">
+                <btn id="btn5Audio" onClick="spawnAudio()" class="btn"
+                    style="position: absolute; left: 50%;  margin: 0; top: 50%; width: fit-content; transform: translate(-50%, -50%);">
+                    Click to create ErrorBreaker game</button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="section-footer py-4 bg-primary">
+        <div class="container">
+            <div>
+                <h2 class="text-2 mb-1">ErrorBreaker</h2>
+            </div>
+            <div>
+                Created by Aidan Brasseur for CSC309
+            </div>
+            <div>
+                <div>
+                    <a href="https://github.com/csc309-winter-2021/js-library-brasseu2">
+                        <i class="fa fa-github" style="font-size: 3vw"></i>
+                    </a>
+                    </a>
+                </div>
+            </div>
+            <div>
+            </div>
+    </footer>
 </body>
+
 </html>

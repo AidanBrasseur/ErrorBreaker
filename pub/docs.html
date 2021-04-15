@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <h1 class="logo">ErrorBreaker</h1>
+      <ul class="nav">
+        <li><a href="index.html#home">Home</a></li>
+        <li><a href="#about">Docs</a></li>
+        <li><a href="examples.html">Examples</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <section class="section-a">
+    <div class="container">
+      <div>
+        <h1>Getting Started</h1>
+        <p>
+          Using ErrorBreaker is very simple, but first we need to set up a few dependencies before we can get started.
+        </p>
+        <p>
+          ErrorBreaker utilizes jQuery, and thus you must include jQuery as a script in the head of your HTML as follows
+        <pre>
+                <code>
+                    &lt;script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">&lt;/script>
+                </code>
+            </pre>
+        </p>
+        <p>
+          ErrorBreaker also utilizes a custom font that must be imported. Include this font in the head of your HTML as
+          follows
+        <pre>
+                <code>
+                    &lt;link href='https://fonts.googleapis.com/css?family=Black+Ops+One' rel='stylesheet' type='text/css'>
+                </code>
+            </pre>
+        </p>
+        <p>
+          Finally, we are ready to include the main ErrorBreaker.js library code. This code can be found <a
+            href="./js/ErrorBreaker.js">here.</a> Include this script in the head of your HTML as follows
+        <pre>
+                <code>
+                    &lt;script defer type="text/javascript" src='ErrorBreaker.js'> &lt;/script>
+                </code>
+            </pre>
+        </p>
+        <p>
+          Now that we're all set up, we can begin creating our first game with ErrorBreaker!
+        </p>
+        <p>
+          If you want to skip the instructions and hop straight to the code, create an HTML div with id errorContainer,
+          set its width and height, and copy the following code to create your first basic example of the ErrorBreaker
+          game
+        </p>
+        <textarea readonly>
+                parentDiv = $('#errorContainer');
+                const obj = {
+                            levelText: '404',
+                            message: "We’re sorry, the page you are looking for has vanished",
+                            div: parentDiv[0],
+                            primaryColour: 'Coral',
+                            secondaryColour: 'Gainsboro',
+                            backgroundColour: 'LightSteelBlue',
+                            ballColour: 'Navy',
+                            messageColour: 'black',
+                            slam: true
+                        }
+                const errorBreaker = new ErrorBreaker(obj)
+              </textarea>
+        <p>Check out the <a href="examples.html">Examples Page</a> to see some demos and instructions on how to play!
+        </p>
+      </div>
+
+    </div>
+  </section>
+  <section style=" margin: 2rem 0;">
+    <h1 style=" text-align: center; margin-left: -2rem;  margin-bottom: 25px; font-size: 4rem;
+    color: var(--primary-color);">Creating the ErrorBreaker Game</h1>
+
+    <div class="container">
+      <p>To create the ErrorBreaker object, pass in a single object with the following attributes</p>
+      <div style="margin-top: 20px;">
+        <table id="docTable1">
+          <tr>
+            <th>Object Attribute</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>levelText</td>
+            <td>string or number</td>
+            <td>An alphanumeric text which dictates what the bricks in the level will be shaped as</td>
+          </tr>
+          <tr>
+            <td>message</td>
+            <td>string [optional]</td>
+            <td>The message to display above the game. Typically used to provide information about an error</td>
+          </tr>
+          <tr>
+            <td>div</td>
+            <td>An HTML div element</td>
+            <td>The HTML div element in which the game will be rendered</td>
+          </tr>
+          <tr>
+            <td>primaryColour</td>
+            <td>CSS recognized colour string or hexadecimal colour code</td>
+            <td>The primary colour of the bricks. The bricks that compose the levelText will be this colour</td>
+          </tr>
+          <tr>
+            <td>secondaryColour</td>
+            <td>CSS recognized colour string or hexadecimal colour code</td>
+            <td>The secondary colour of the bricks. The bricks that surround the levelText will be this colour</td>
+          </tr>
+          <tr>
+            <td>ballColour</td>
+            <td>CSS recognized colour string or hexadecimal colour code</td>
+            <td>The colour of the ball</td>
+          </tr>
+          <tr>
+            <td>messageColour</td>
+            <td>CSS recognized colour string or hexadecimal colour code [required if message attribute is specified]
+            </td>
+            <td>The colour of the optional message text displayed above the game</td>
+          </tr>
+          <tr>
+            <td>powerupColour</td>
+            <td>CSS recognized colour string or hexadecimal colour code</td>
+            <td>The colour of the powerup icons that appear during the game</td>
+          </tr>
+          <tr>
+            <td>loading</td>
+            <td>boolean [optional]</td>
+            <td>A boolean to specify if the built in progress bar should be displayed</td>
+          </tr>
+          <tr>
+            <td>progressColour</td>
+            <td>CSS recognized colour string or hexadecimal colour code [required if loading attribute is true]</td>
+            <td>The colour of the loading bar fill</td>
+          </tr>
+          <tr>
+            <td>onClose</td>
+            <td>function [optional]</td>
+            <td>A function that will be called when the ErrorBreaker game is closed by user input or by a developer
+              invoking the animateClose method</td>
+          </tr>
+          <tr>
+            <td>collisionSound</td>
+            <td>src file string [optional]</td>
+            <td>A path to a valid audio file. This audio will be played when the ball collides with an obstacle</td>
+          </tr>
+          <tr>
+            <td>secondaryCollisionSound</td>
+            <td>src file string [optional]</td>
+            <td>A path or url to a valid audio file. This audio will be played when the ball collides with an obstacle.
+              Alternates with collisionSound</td>
+          </tr>
+          <tr>
+            <td>gameOverSound</td>
+            <td>src file string [optional]</td>
+            <td>A path or url to a valid audio file. This audio will be played when all balls have been lost. </td>
+          </tr>
+          <tr>
+            <td>winSound</td>
+            <td>src file string [optional]</td>
+            <td>A path or url to a valid audio file. This audio will be played when all bricks have been cleared. </td>
+          </tr>
+          <tr>
+            <td>powerupSound</td>
+            <td>src file string [optional]</td>
+            <td>A path or url to a valid audio file. This audio will be played when the player collects a powerup. </td>
+          </tr>
+          <tr>
+            <td>slam</td>
+            <td>boolean [optional]</td>
+            <td>A boolean to specify whether the levelText should initially animate in with a slam animation.</td>
+          </tr>
+        </table>
+        <div style="margin-top: 50px; flex-direction: row; display: flex; align-items: center;">
+          <textarea readonly>
+                parentDiv = $('#errorContainer');
+                const obj = {
+                            levelText: '404',
+                            message: "We’re sorry, the page you are looking for has vanished",
+                            div: parentDiv[0],
+                            primaryColour: 'Coral',
+                            secondaryColour: 'Gainsboro',
+                            backgroundColour: 'LightSteelBlue',
+                            ballColour: 'Navy',
+                            messageColour: 'black',
+                            slam: true
+                        }
+                const errorBreaker = new ErrorBreaker(obj)
+              </textarea>
+          <div style="margin-left: 10px;">
+            <a href="examples.html#basicExample" class="btn"> See this code in action</a>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <section style='margin-top: 50px;  margin: 2rem 0;'>
+    <h1 style=" text-align: center; margin-left: -15rem;   margin-bottom: 25px; font-size: 4rem;
+    color: var(--primary-color);">Interacting with the Game</h1>
+    <div class="container">
+      <p style="margin-bottom: 20px;">The majority of the functionality of ErrorBreaker occurs during construction,
+        but there are a few methods that are exposed to the developer after the object is made</p>
+      <h2>setProgress</h2>
+      <p>Set the progress of the loading bar. loading and progressColour attributes must be specified during
+        construction in order to use this method.</p>
+      <div style="margin-top: 20px;">
+        <table id="docTable2">
+          <tr>
+            <th>Parameters</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>percentage</td>
+            <td>number</td>
+            <td>Sets the loading bar above the game to be filled up to the given percentage. If percentages reach or
+              exceed 100, the player will have the option to dismiss the game with an on screen button. </td>
+          </tr>
+
+        </table>
+        <div style="margin-top: 20px;">
+          <p>To illustrate this method, below is an example setting the progress of the loading bar using mock loading
+            data</p>
+        </div>
+        <div style="margin-top: 20px; flex-direction: row; display: flex; align-items: center;">
+          <textarea readonly>
+                parentDiv = $('#errorContainer');
+                const obj = {
+                    levelText: 'loading',
+                    div: parentDiv[0],
+                    primaryColour: 'DeepSkyBlue',
+                    secondaryColour: 'Aquamarine',
+                    backgroundColour: 'AliceBlue',
+                    ballColour: 'black',
+                    messageColour: 'black',
+                    loading: true,
+                    progressColour: 'LightGreen',
+                    onClose: onClose
+                }
+                const errorBreaker = new ErrorBreaker(obj)
+                let step = 0.4;
+                let progress = 0;
+                //fake loading progress
+                interval = setInterval(function () {
+                    progress += step
+                  
+                    if(progress >= 40){
+                        step = 0.3
+                    }
+                    if(progress >= 50){
+                        step = 0.25
+                    }
+                    if(progress >= 70){
+                        step = 0.2
+                    }
+                    errorBreaker.setProgress(progress)
+                }, 100);
+              </textarea>
+          <div style="margin-left: 10px;">
+            <a href="examples.html#loadingExample" class="btn"> See this code in action</a>
+          </div>
+
+        </div>
+
+      </div>
+      <h2 style="margin-top: 50px">animateClose</h2>
+      <p>Close the game and destroy all components of the game space. Will call the onClose method passed into the
+        ErrorBreaker constructor if available.</p>
+      <div style="margin-top: 20px;">
+        <div style="margin-top: 20px;">
+          <p>To illustrate this method, below is an example closing the game on the click of a button</p>
+        </div>
+        <div style="margin-top: 20px; flex-direction: row; display: flex; align-items: center;">
+          <textarea readonly>
+              let errorContainer1 = $('#errorContainer3');
+              let button = $('#btn3Close')[0]
+              button.remove();
+              let closeButton = $('#btn4Close')[0]
+              closeButton.style.opacity = 1
+              const obj = {
+                  levelText: '309',
+                  message: "Thanks for playing",
+                  div: errorContainer1[0],
+                  primaryColour: 'Coral',
+                  secondaryColour: 'Gainsboro',
+                  backgroundColour: 'LightSteelBlue',
+                  ballColour: 'Navy',
+                  messageColour: 'black',
+                  powerupColour: 'red',
+                  slam: true
+              }
+              let errorBreaker = new ErrorBreaker(obj)
+              closeButton.onclick = () => {
+                  errorBreaker.animateClose()
+                  closeButton.style.opacity = 0
+              }
+            </textarea>
+          <div style="margin-left: 10px;">
+            <a href="examples.html#closeExample" class="btn"> See this code in action</a>
+          </div>
+
+        </div>
+
+      </div>
+
+
+    </div>
+  </section>
+
+
+  <footer class="section-footer py-4 bg-primary">
+    <div class="container">
+      <div>
+        <h2 class="text-2 mb-1">ErrorBreaker</h2>
+      </div>
+      <div>
+        Created by Aidan Brasseur for CSC309
+      </div>
+      <div>
+        <div>
+          <a href="https://github.com/csc309-winter-2021/js-library-brasseu2">
+            <i class="fa fa-github" style="font-size: 3vw"></i>
+          </a>
+          </a>
+        </div>
+      </div>
+      <div>
+      </div>
+  </footer>
+</body>
+
+</html>
