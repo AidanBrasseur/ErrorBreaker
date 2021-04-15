@@ -1136,34 +1136,34 @@
                 this.collisionSound = new Audio(obj.collisionSound)
             }
             else {
-                this.collisionSound = new Audio('./assets/audio/collision.mp3')
+                this.collisionSound = new Audio('https://csc309errorbreaker.herokuapp.com/assets/audio/collision.mp3')
             }
             this.playCollision1 = true
             if (obj.secondaryCollisionSound) {
                 this.secondaryCollisionSound = new Audio(obj.secondaryCollisionSound)
             }
             else {
-                this.secondaryCollisionSound = new Audio('./assets/audio/secondaryCollision.mp3')
+                this.secondaryCollisionSound = new Audio('https://csc309errorbreaker.herokuapp.com/assets/audio/secondaryCollision.mp3')
             }
 
             if (obj.gameOverSound) {
                 this.gameOverSound = new Audio(obj.gameOverSound)
             }
             else {
-                this.gameOverSound = new Audio("./assets/audio/gameOver.mp3")
+                this.gameOverSound = new Audio("https://csc309errorbreaker.herokuapp.com/assets/audio/gameOver.mp3")
             }
 
             if (obj.winSound) {
                 this.winSound = new Audio(obj.winSound)
             }
             else {
-                this.winSound = new Audio("./assets/audio/win.mp3")
+                this.winSound = new Audio("https://csc309errorbreaker.herokuapp.com/assets/audio/win.mp3")
             }
             if (obj.powerupSound) {
                 this.powerupSound = new Audio(obj.powerupSound)
             }
             else {
-                this.powerupSound = new Audio("./assets/audio/powerup.mp3")
+                this.powerupSound = new Audio("https://csc309errorbreaker.herokuapp.com/assets/audio/powerup.mp3")
             }
             this.slam = obj.slam
             this.powerupColour = obj.powerupColour
