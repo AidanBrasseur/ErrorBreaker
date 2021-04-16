@@ -1,6 +1,6 @@
 # ErrorBreaker
 
-The full landing page for ErrorBreaker can be accessed at the following link: [LandingPage](https://csc309errorbreaker.herokuapp.com/index.html#home)
+The full landing page for ErrorBreaker can be accessed at the following link: [Landing Page](https://csc309errorbreaker.herokuapp.com/index.html#home)
 
 The full documentation can be accessed at the following link:  [Documentation](https://csc309errorbreaker.herokuapp.com/docs.html)
 
