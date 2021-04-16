@@ -408,7 +408,7 @@
         gameOverText.innerText = "Game Over"
         gameOverDiv.appendChild(gameOverText)
         let gameOverButton = document.createElement('BUTTON')
-        gameOverButton.style = "border-radius: 5px; font-family: 'Segoe UI'; font-weight: bold; width: 65%; height: 20%"
+        gameOverButton.style = "border-radius: 5px; font-family: 'Segoe UI'; font-weight: bold; width: 65%; height: 20%; min-height: 30px"
         gameOverButton.innerText = "Play Again?"
         gameOverDiv.appendChild(gameOverButton)
         gameOverElement.appendChild(gameOverDiv)
@@ -453,7 +453,7 @@
         winText.innerText = "You Win!"
         winDiv.appendChild(winText)
         let winButton = document.createElement('BUTTON')
-        winButton.style = "border-radius: 5px; font-family: 'Segoe UI'; font-weight: bold; width: 65%; height: 20%"
+        winButton.style = "border-radius: 5px; font-family: 'Segoe UI'; font-weight: bold; width: 65%; height: 20%; min-height: 30px"
         winButton.innerText = "Play Again?"
         winDiv.appendChild(winButton)
         winElement.appendChild(winDiv)
