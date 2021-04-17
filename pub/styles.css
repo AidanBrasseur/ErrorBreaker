@@ -1,254 +1,205 @@
-:root {
-    --primary-color: #333;
-    --secondary-color: #444;
-    --overlay-color: rgba(0, 0, 0, 0.7);
-  }
-  
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  
-  body {
-    font-family: 'Catamaran', sans-serif;
-    line-height: 1.6;
-    color: #333;
-    font-size: 1.1rem;
-  }
-  
-  h1,
-  h2,
-  h3,
-  h4 {
-    line-height: 1.3;
-  }
-  
-  a {
-    color: #444;
-    text-decoration: none;
-  }
 
-  .main-div a{
-    color: blue;
-  }
-
-  .footer-div a {
-    color: white;
-  }
-  
-  #docTable1{
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-    
-  }
-  
-  #docTable1 td, #docTable1 th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-  }
-  
- #docTable1 tr:nth-child(even) {
-    background-color: #dddddd;
-  }
-
-  #docTable2{
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-    
-  }
-  
-  #docTable2 td, #docTable2 th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-  }
-  
- #docTable2 tr:nth-child(even) {
-    background-color: #dddddd;
-  }
-
-  ul {
-    list-style: none;
-  }
-  
-  img {
-    width: 100%;
-  }
-  
-  .container {
-    max-width: 1100px;
-    margin: auto;
-    overflow: hidden;
-    padding: 0 2rem;
-  }
-  
-  .navbar {
-    font-size: 1.2rem;
-    padding-top: 0.3rem;
-    padding-bottom: 0.3rem;
-  }
-  
-  .navbar .container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 2rem;
-  }
-  
-  .navbar .name {
-    font-size: 2rem;
-  }
-  
-  .navbar ul {
-    justify-self: flex-end;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .navbar a {
-    padding: 0 1rem;
-  }
-  
-  .navbar a:hover {
-    color: #555;
-  }
-  
-  .main-div {
-    margin: 2rem 0;
-  }
-  
-  
-  .main-div .container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 3rem;
-    align-items: center;
-    justify-content: center;
-  }
-
-  textarea {
-    overflow-y: scroll;
-    height: 250px;
-    width: 750px;
-    resize: none; /* Remove this if you want the user to resize the textarea */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
- 
-  .main-div h1 {
-    font-size: 4rem;
-    color: var(--primary-color);
-  }
+
+body {
+  font-family: 'Catamaran', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.3;
+}
+
+a {
+  color: #444;
+  text-decoration: none;
+}
+
+.main-div a{
+  color: blue;
+}
+
+.footer-div a {
+  color: white;
+}
+
+#docTable1{
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
   
-  .main-div p {
-    margin: 1rem 0;
-  }
+}
+
+#docTable1 td, #docTable1 th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+#docTable1 tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+#docTable2{
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
   
-  .hero-div {
-    position: relative;
-    background: url('./assets/images/grid.jpg') no-repeat bottom center/cover;
-    height: 600px;
-  }
-  
-  .hero-div-inner {
-    color: #fff;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    margin: auto;
-    max-width: 860px;
-    padding: 5rem 0;
-  }
-  
-  .hero-div-inner h3 {
-    font-size: 2rem;
-  }
-  
-  .hero-div-inner h2 {
-    font-size: 5rem;
-    margin-top: 1rem;
-  }
-  
-  .hero-div-inner p {
-    margin-top: 1rem;
-    font-size: 1.5rem;
-  }
-  
-  .footer-div {
-    background: var(--primary-color);
-    color: #fff;
-    padding: 4rem 0;
-  }
-  
-  .footer-div .container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 1rem;
-    justify-items: center;
-    align-items: center;
-  }
-  
-  .footer-div h2 {
-    font-size: 2rem;
-  }
- 
-  .btn {
-    display: inline-block;
-    background: var(--primary-color);
-    color: #fff;
-    padding: 0.8rem 1.5rem;
-    border: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    border-radius: 30px;
-  }
-  
-  .btn:hover {
-    background: var(--secondary-color);
-  }
-  
-  .overlay {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: var(--overlay-color);
-  }
-  
-  @media (max-width: 700px) {
-    .main-div .container {
-      grid-template-columns: 1fr;
-      text-align: center;
-    }
-  
-    .main-div .container div:first-child {
-      order: 2;
-    }
-  
-    .main-div .container div:nth-child(2) {
-      order: -1;
-    }
-  
-    .main-div img {
-      width: 80%;
-      margin: auto;
-    }
-  
-    .footer-div {
-      padding: 2rem 0;
-      
-    }
-    .footer-div .container {
-      grid-template-columns: 1fr;
-      text-align: center;
-    }
-  
-    
-  }
-  
+}
+
+#docTable2 td, #docTable2 th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+#docTable2 tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  width: 100%;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  overflow: hidden;
+  padding: 0 2rem;
+}
+
+.navbar {
+  font-size: 1.2rem;
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+}
+
+.navbar .container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 2rem;
+}
+
+.navbar .name {
+  font-size: 2rem;
+}
+
+.navbar ul {
+  justify-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar a {
+  padding: 0 1rem;
+}
+
+.navbar a:hover {
+  color: #555;
+}
+
+.main-div {
+  margin: 2rem 0;
+}
+
+
+.main-div .container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 3rem;
+  align-items: center;
+  justify-content: center;
+}
+
+textarea {
+  overflow-y: scroll;
+  height: 250px;
+  width: 750px;
+  resize: none; /* Remove this if you want the user to resize the textarea */
+}
+
+.btn {
+  display: inline-block;
+  background: #333;
+  color: #fff;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  border-radius: 30px;
+}
+
+.btn:hover {
+  background: #444;
+}
+
+.main-div h1 {
+  font-size: 4rem;
+  color: #333;
+}
+
+.main-div p {
+  margin: 1rem 0;
+}
+
+.overlay {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color:rgba(0, 0, 0, 0.7);
+}
+
+.about-div {
+  position: relative;
+  background: url('./assets/images/grid.jpg') no-repeat bottom center/cover;
+  height: 600px;
+}
+
+.about-div-inner {
+  color: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: auto;
+  max-width: 860px;
+  padding: 5rem 0;
+}
+
+.footer-div {
+  background: #333;
+  color: #fff;
+  padding: 4rem 0;
+}
+
+.footer-div .container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 1rem;
+  justify-items: center;
+  align-items: center;
+}
+
+.footer-div h2 {
+  font-size: 2rem;
+}
+
+
