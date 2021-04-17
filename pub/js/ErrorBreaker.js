@@ -349,6 +349,9 @@
         this.currPowerups = []
         this.restarting = true;
         this.speedFactor = 1 / 2
+        this.activeSpeed = [];
+        this.activeWidth = [];
+        this.paddleElement[0].style.width = '15%'
         this.balls = [{
             x: 0,
             y: 0,
@@ -574,7 +577,16 @@
                 }
                 else if (powerup.effect == 'increase') {
                     this.paddleElement[0].style.width = '25%'
-                    setTimeout(() => this.paddleElement[0].style.width = '15%', 7000);
+                    this.activeWidth.push(powerup)
+                    setTimeout(() => {
+                        const index = this.activeWidth.indexOf(powerup);
+                        if (index > -1) {
+                            this.activeWidth.splice(index, 1);
+                        }
+                        if(this.activeWidth.length == 0){
+                            this.paddleElement[0].style.width = '15%'
+                        }
+                    }, 7000);
                     const index = this.currPowerups.indexOf(powerup);
                     if (index > -1) {
                         this.currPowerups.splice(index, 1);
@@ -585,7 +597,16 @@
                 }
                 else if (powerup.effect == 'speed') {
                     this.speedFactor = 1 / 1.5
-                    setTimeout(() => this.speedFactor = 1 / 2, 7000);
+                    this.activeSpeed.push(powerup)
+                    setTimeout(() => {
+                        const index = this.activeSpeed.indexOf(powerup);
+                        if (index > -1) {
+                            this.activeSpeed.splice(index, 1);
+                        }
+                        if(this.activeSpeed.length == 0){
+                            this.speedFactor = 1 / 2
+                        }
+                    }, 7000);
                     const index = this.currPowerups.indexOf(powerup);
                     if (index > -1) {
                         this.currPowerups.splice(index, 1);
@@ -651,7 +672,6 @@
 
 
                             let randomNum = Math.floor(Math.random() * 100);
-                            console.log(randomNum)
                             let icon = ""
                             let effect = ""
                             if (randomNum <= 7) {
@@ -1220,6 +1240,8 @@
             }]
             this.paddleElement = null;
             this.currPowerups = [];
+            this.activeSpeed = [];
+            this.activeWidth = [];
             drawInitialLevel.call(this)
             drawStartButton.call(this)
             drawInitialPaddle.call(this)
