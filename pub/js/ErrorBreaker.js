@@ -825,7 +825,6 @@
 
     function drawInitialBall() {
         let ball = document.createElement('div')
-        ball.className = 'ball'
         ball.style.width = '5%'
         ball.style.height = 0
         ball.style.paddingBottom = '5%'
