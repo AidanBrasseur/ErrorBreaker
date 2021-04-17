@@ -1,6 +1,6 @@
 # ErrorBreaker
 
-The full landing page for ErrorBreaker can be accessed at the following link: [LandingPage](https://csc309errorbreaker.herokuapp.com/index.html#home)
+The full landing page for ErrorBreaker can be accessed at the following link: [Landing Page](https://csc309errorbreaker.herokuapp.com/index.html#home)
 
 The full documentation can be accessed at the following link:  [Documentation](https://csc309errorbreaker.herokuapp.com/docs.html)
 
@@ -26,7 +26,7 @@ Now that we're all set up, we can begin creating our first game with ErrorBreake
 
 Create an HTML div element and ensure that you set its width and height.
 
-Next, in your JavaScript code, create an instance of the ErrorBreaker object, passing in a single object with this div and all other required attributes. Creating this object with spawn the ErrorBreaker game in the div provided.
+Next, in your JavaScript code, create an instance of the ErrorBreaker object, passing in a single object with this div and all other required attributes. Creating this object will spawn the ErrorBreaker game in the div provided.
 
 If you want to skip the instructions and hop straight to the code, create an HTML div with id errorContainer, set its width and height, and copy the following code to create your first basic example of the ErrorBreaker game
 
